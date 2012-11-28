@@ -3,4 +3,6 @@
   "description": "Asserto - expresso style assertions in a module",
   "author": "Cian Clarke <cian@cianclarke.com>",
   "repository": "https://github.com/cianclarke/asserto",
+  "main": "./asserto.js",
+  "bin": "./asserto.js"
 }
