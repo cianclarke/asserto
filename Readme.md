@@ -1,4 +1,4 @@
-# Expresso
+# Asserto
 
   Improved assert, supporting the feature set of Expresso's assert
   used to easily migrate away Expresso to another testing framework.
