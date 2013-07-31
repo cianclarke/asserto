@@ -22,16 +22,16 @@
   assert.response now looks like this:
 
 `
-assert.response({
-  url : '/someLocalEndpoint',
-  method : 'POST',
-  headers : {
-    'Content-Type' : 'application/json'
-      }
-    }, {
-      status : 200
-    }, function(err, res) {
-      assert.ok(!err);
-      assert.equal(res.headers['content-type'], 'application/json');
-});
+	assert.response({  
+	  url : '/someLocalEndpoint',  
+	  method : 'POST',  
+	  headers : {  
+	    'Content-Type' : 'application/json'  
+	      }  
+	    }, {  
+	      status : 200  
+	    }, function(err, res) {  
+	      assert.ok(!err);  
+	      assert.equal(res.headers['content-type'], 'application/json');  
+	});
 `
