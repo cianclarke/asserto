@@ -15,3 +15,4 @@
   - `assert.isDefined()`
   - `assert.match()`
   - `assert.length()`
+  - `assert.response()` with slightly different callback style: was function(res), now: function(err, res){}
