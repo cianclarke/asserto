@@ -106,44 +106,21 @@ assert.length = function(val, n, msg) {
   assert.equal(n, val.length, msg);
 };
 
-assert.response = function(server, req, res, cb) {
-  var msg = '';
+/**
+ * Assert response from `server` with
+ * the given `req` object and `res` assertions object.
+ *
+ * @param {Object} req
+ * @param {Object|Function} res
+ * @param {Function} cb - function(err, response) { }
+ * @param {Object} config - override port with config.port
+ */
 
-  function check() {
-    try {
-      server.__port = server.address().port;
-      server.__listening = true;
-    } catch (err) {
-      process.nextTick(check);
-      return;
-    }
-    if (server.__deferred) {
-      server.__deferred.forEach(function(fn) { fn(); });
-      server.__deferred = null;
-    }
-  }
+assert.response = function(req, res, cb, config) {
+  var msg = '',
+  port = config && config.port || 3000;
 
-  // Pending responses
-  server.setMaxListeners(99999);
-  server.__pending = server.__pending || 0;
-  server.__pending++;
-
-  // Check that the server is ready or defer
-  if (!server.fd) {
-    server.__deferred = server.__deferred || [];
-    server.listen(server.__port = port++, '127.0.0.1', check);
-  } else if (!server.__port) {
-    server.__deferred = server.__deferred || [];
-    process.nextTick(check);
-  }
-
-  // The socket was created but is not yet listening, so keep deferring
-  if (!server.__listening) {
-    server.__deferred.push(issue);
-    return;
-  } else {
-    issue();
-  }
+  issue();
 
   function issue() {
     // Issue request
@@ -156,25 +133,19 @@ assert.response = function(server, req, res, cb) {
 
     var request = http.request({
       host: '127.0.0.1',
-      port: server.__port,
+      port: port,
       path: req.url,
       method: method,
       headers: req.headers
     });
 
-    var check = function() {
-      if (--server.__pending === 0) {
-        server.close();
-        server.__listening = false;
-      }
-    };
-
     // Timeout
     if (requestTimeout) {
       timer = setTimeout(function() {
-        check();
         delete req.timeout;
-        cb(new Error(msg + 'Request timed out after ' + requestTimeout + 'ms.'));
+        var err = new Error(msg + 'Request timed out after ' + requestTimeout + 'ms.');
+        console.log(err);
+        cb(err);
       }, requestTimeout);
     }
 
@@ -231,12 +202,12 @@ assert.response = function(server, req, res, cb) {
           }
 
           // Add this to the succeeded bin.
-          cb(null, msg);
+          cb(null, response);
         } catch (err) {
-          return cb(null, err);
+          console.log(err);
+          cb(err);
         } finally {
-          // Potentially shut down the server.
-          check();
+
         }
       });
     });
